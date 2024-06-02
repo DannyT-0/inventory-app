@@ -4,6 +4,9 @@ console.log(
 	'This script populates some test movies, directors, and genres to your database. Specified database as argument - e.g.: node populatedb "mongodb+srv://cooluser:coolpassword@cluster0.lz91hw2.mongodb.net/local_library?retryWrites=true&w=majority"'
 );
 
+// Load environment variables
+require("dotenv").config({ path: "./mong.env" });
+
 // Get arguments passed on command line
 const userArgs = process.argv.slice(2);
 
@@ -18,26 +21,34 @@ const movies = [];
 const mongoose = require("mongoose");
 mongoose.set("strictQuery", false);
 
-const mongoDB = userArgs[0];
+const mongoDBURI = userArgs[0]; // Use the MongoDB URI passed as argument
+console.log("MONGODB_URI:", mongoDBURI);
 
-main().catch((err) => console.log(err));
+main().catch((err) => console.error("Error in main function:", err));
 
 async function main() {
-	console.log("Debug: About to connect");
-	await mongoose.connect(mongoDB);
-	console.log("Debug: Should be connected?");
-	await createGenres();
-	await createDirectors();
-	await createMovies();
-	console.log("Debug: Closing mongoose");
-	mongoose.connection.close();
+	try {
+		console.log("Debug: About to connect");
+		await mongoose.connect(mongoDBURI, {
+			useNewUrlParser: true,
+			useUnifiedTopology: true,
+		});
+		console.log("Debug: Connected to MongoDB");
+
+		await createGenres();
+		await createDirectors();
+		await createMovies();
+
+		console.log("Debug: Closing mongoose connection");
+		mongoose.connection.close();
+		console.log("Debug: Closed mongoose connection");
+	} catch (err) {
+		console.error("Error in main function:", err);
+	}
 }
 
-// We pass the index to the ...Create functions so that, for example,
-// genre[0] will always be the Fantasy genre, regardless of the order
-// in which the elements of promise.all's argument complete.
 async function genreCreate(index, name) {
-	const genre = new Genre({ name: name });
+	const genre = new Genre({ name });
 	await genre.save();
 	genres[index] = genre;
 	console.log(`Added genre: ${name}`);
@@ -50,43 +61,25 @@ async function directorCreate(
 	d_birth,
 	d_death
 ) {
-	const directordetail = { first_name: first_name, family_name: family_name };
-	if (d_birth != false) directordetail.date_of_birth = d_birth;
-	if (d_death != false) directordetail.date_of_death = d_death;
+	const directordetail = { first_name, family_name };
+	if (d_birth) directordetail.date_of_birth = d_birth;
+	if (d_death) directordetail.date_of_death = d_death;
 
 	const director = new Director(directordetail);
-
 	await director.save();
 	directors[index] = director;
 	console.log(`Added director: ${first_name} ${family_name}`);
 }
 
 async function movieCreate(index, title, summary, director, genre) {
-	const moviedetail = {
-		title: title,
-		summary: summary,
-		director: director,
-	};
-	if (genre != false) moviedetail.genre = genre;
+	const moviedetail = { title, summary, director };
+	if (genre) moviedetail.genre = genre;
 
 	const movie = new Movie(moviedetail);
 	await movie.save();
 	movies[index] = movie;
 	console.log(`Added movie: ${title}`);
 }
-
-// async function movieInstanceCreate(index, movie) {
-// 	const movieinstancedetail = {
-// 		movie: movie,
-// 	};
-// 	// if (due_back != false) bookinstancedetail.due_back = due_back;
-// 	// if (status != false) bookinstancedetail.status = status;
-
-// 	const movieinstance = new MovieInstance(movieinstancedetail);
-// 	await movieinstance.save();
-// 	movieinstances[index] = movieinstance;
-// 	console.log(`Added movieinstance: ${movie}`);
-// }
 
 async function createGenres() {
 	console.log("Adding genres");
@@ -103,7 +96,7 @@ async function createDirectors() {
 		directorCreate(0, "Steven", "Spielberg", "1946-12-18", false),
 		directorCreate(1, "Martin", "Scorcese", "1942-11-17", false),
 		directorCreate(2, "Christopher", "Nolan", "1970-07-30", false),
-		directorCreate(3, "Quentin Tarantino", "1963-03-27", false),
+		directorCreate(3, "Quentin", "Tarantino", "1963-03-27", false),
 		directorCreate(4, "George", "Lucas", "1944-05-14", false),
 	]);
 }
@@ -162,20 +155,3 @@ async function createMovies() {
 		),
 	]);
 }
-
-// async function createMovieInstances() {
-// 	console.log("Adding directors");
-// 	await Promise.all([
-// 		movieInstanceCreate(0, books[0]),
-// 		movieInstanceCreate(1, books[1]),
-// 		movieInstanceCreate(2, books[2]),
-// 		movieInstanceCreate(3, books[3]),
-// 		movieInstanceCreate(4, books[3]),
-// 		movieInstanceCreate(5, books[3]),
-// 		movieInstanceCreate(6, books[4]),
-// 		movieInstanceCreate(7, books[4]),
-// 		movieInstanceCreate(8, books[4]),
-// 		movieInstanceCreate(9, books[0]),
-// 		movieInstanceCreate(10, books[1]),
-// 	]);
-// }
