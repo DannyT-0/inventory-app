@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 var createError = require("http-errors");
 var express = require("express");
 var path = require("path");
@@ -9,6 +11,15 @@ var usersRouter = require("./routes/users");
 var testRouter = require("./routes/test");
 
 var app = express();
+
+const mongoose = require("mongoose");
+
+const mongoDBURI = process.env.MONGODB_URI;
+
+mongoose
+	.connect(mongoDBURI)
+	.then(() => console.log("Connected to MongoDB"))
+	.catch((err) => console.error("Error connecting to MongoDB:", err));
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
