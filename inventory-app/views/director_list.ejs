@@ -1,0 +1,16 @@
+<%- include('layout') %>
+
+<h1><%= title %></h1>
+
+<% if (director_list.length) { %>
+<ul>
+	<% director_list.forEach(function(director) { %>
+	<li>
+		<a href="<%= director.url %>"><%= director.name %></a>
+		(<%= director.date_of_birth %> - <%= director.date_of_death %>)
+	</li>
+	<% }); %>
+</ul>
+<% } else { %>
+<p>There are no directors.</p>
+<% } %>

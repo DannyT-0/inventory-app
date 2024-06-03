@@ -1,0 +1,19 @@
+<%- include('layout') %>
+
+<h1>Genre: <%= genre.name %></h1>
+
+<div style="margin-left: 20px; margin-top: 20px">
+	<h2 style="font-size: 1.5rem">Movies</h2>
+	<% if (genre_movies.length) { %>
+	<dl>
+		<% genre_movies.forEach(function(movie) { %>
+		<dt>
+			<a href="<%= movie.url %>"><%= movie.title %></a>
+		</dt>
+		<dd><%= movie.summary %></dd>
+		<% }); %>
+	</dl>
+	<% } else { %>
+	<p>This genre has no movies.</p>
+	<% } %>
+</div>

@@ -1,0 +1,25 @@
+<%- include('layout') %>
+
+<h1>Director: <%= director.name %></h1>
+<p><%= director.date_of_birth %> - <%= director.date_of_death %></p>
+
+<div style="margin-left: 20px; margin-top: 20px">
+	<h2 style="font-size: 1.5rem">Movies</h2>
+	<% if (director_movies.length) { %>
+	<dl>
+		<% director_movies.forEach(function(movie) { %>
+		<dt>
+			<a href="<%= movie.url %>"><%= movie.title %></a>
+		</dt>
+		<dd><%= movie.summary %></dd>
+		<% }); %>
+	</dl>
+	<% } else { %>
+	<p>This director has no movies.</p>
+	<% } %>
+</div>
+
+<hr />
+<p>
+	<a href="<%= director.url %>/delete">Delete director</a>
+</p>

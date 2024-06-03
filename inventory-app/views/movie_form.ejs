@@ -1,0 +1,91 @@
+<%- include('layout') %>
+
+<h1><%= title %></h1>
+
+<form method="POST">
+	<div class="form-group">
+		<label for="title">Title:</label>
+		<input
+			id="title"
+			class="form-control"
+			type="text"
+			placeholder="Name of movie"
+			name="title"
+			required
+			value="<%= movie ? movie.title : '' %>"
+		/>
+	</div>
+	<div class="form-group">
+		<label for="director">Director:</label>
+		<select id="director" class="form-control" name="director" required>
+			<option value="">--Please select an director--</option>
+			<% directors.forEach(function(director) { %> <% if (movie &&
+			director._id.toString() === movie.director._id.toString()) { %>
+			<option value="<%= director._id %>" selected><%= director.name %></option>
+			<% } else { %>
+			<option value="<%= director._id %>"><%= director.name %></option>
+			<% } %> <% }); %>
+		</select>
+	</div>
+	<div class="form-group">
+		<label for="summary">Summary:</label>
+		<textarea
+			id="summary"
+			class="form-control"
+			placeholder="Summary"
+			name="summary"
+			required
+		>
+<%= movie ? movie.summary : '' %></textarea
+		>
+	</div>
+	<div class="form-group">
+		<label for="isbn">ISBN:</label>
+		<input
+			id="isbn"
+			class="form-control"
+			type="text"
+			placeholder="ISBN13"
+			name="isbn"
+			required
+			value="<%= movie ? movie.isbn : '' %>"
+		/>
+	</div>
+	<div class="form-group">
+		<label>Genre:</label>
+		<div>
+			<% genres.forEach(function(genre) { %>
+			<div style="display: inline; padding-right: 10px">
+				<% if (genre.checked) { %>
+				<input
+					class="checkbox-input"
+					type="checkbox"
+					name="genre"
+					id="<%= genre._id %>"
+					value="<%= genre._id %>"
+					checked
+				/>
+				<% } else { %>
+				<input
+					class="checkbox-input"
+					type="checkbox"
+					name="genre"
+					id="<%= genre._id %>"
+					value="<%= genre._id %>"
+				/>
+				<% } %>
+				<label for="<%= genre._id %>">&nbsp;<%= genre.name %></label>
+			</div>
+			<% }); %>
+		</div>
+	</div>
+	<button class="btn btn-primary" type="submit">Submit</button>
+</form>
+
+<% if (errors) { %>
+<ul>
+	<% errors.forEach(function(error) { %>
+	<li><%= error.msg %></li>
+	<% }); %>
+</ul>
+<% } %>

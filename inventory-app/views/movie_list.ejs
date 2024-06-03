@@ -1,0 +1,15 @@
+<%- include('layout') %>
+
+<h1><%= title %></h1>
+<% if (movie_list.length) { %>
+<ul>
+	<% movie_list.forEach(function(movie) { %>
+	<li>
+		<a href="<%= movie.url %>"><%= movie.title %></a>
+		(<%= movie.director.name %>)
+	</li>
+	<% }); %>
+</ul>
+<% } else { %>
+<p>There are no movies.</p>
+<% } %>
